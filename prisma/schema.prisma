@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../db.sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Root {
+  id String @id @default(uuid())
+
+  nodes Node[] @relation("root_nodes")
+}
+
+model Node {
+  id String @id @default(uuid())
+
+  rootId    String
+  parentId  String?
+  preItemId String?
+
+  type  String
+  title String?
+
+  parent   Node?  @relation(name: "node_parent", references: [id], fields: [parentId])
+  preItem  Node?  @relation(name: "link", references: [id], fields: [preItemId])
+  root     Root   @relation("root_nodes", references: [id], fields: [rootId])
+  nextItem Node?  @relation(name: "link")
+  children Node[] @relation("node_parent")
+
+}
